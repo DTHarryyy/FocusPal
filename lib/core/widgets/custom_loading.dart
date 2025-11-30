@@ -5,6 +5,11 @@ class CustomLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircularProgressIndicator();
+    return Center(
+      child: SizedBox(
+        height: 35,
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }

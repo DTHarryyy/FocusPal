@@ -1,43 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:practice/features/chat_bot/services/cloud_firestore_service.dart';
 import 'package:practice/features/chat_bot/services/gemini_service.dart';
 
-class MessagesActions extends StatefulWidget {
-  final List messages;
+class MessagesActions extends ConsumerStatefulWidget {
+  final CollectionReference messages;
   final TextEditingController prompt;
   const MessagesActions(
       {super.key, required this.messages, required this.prompt});
 
   @override
-  State<MessagesActions> createState() => _MessagesActionsState();
+  ConsumerState<MessagesActions> createState() => _MessagesActionsState();
 }
 
-class _MessagesActionsState extends State<MessagesActions> {
+class _MessagesActionsState extends ConsumerState<MessagesActions> {
   @override
   void dispose() {
     widget.prompt.dispose();
     super.dispose();
   }
 
-  void sendQuestion() async {
+  void sendQuestion(CloudFirestoreService firebase) async {
     try {
       final usermsg = widget.prompt.text.trim();
+      if (usermsg.isEmpty) return;
       final gemini = GeminiService();
-      setState(() {
-        widget.messages.add({
-          'message': usermsg,
-          'role': 'user',
-          'name': 'Harry',
-        });
-      });
 
+      await firebase.addMessage('Harry', usermsg, 'user');
       final response = await gemini.ask(usermsg);
-      setState(() {
-        widget.messages.add({
-          'message': response,
-          'role': 'bot',
-          'name': 'Bot',
-        });
-      });
+      await firebase.addMessage('ChatBot', response, 'bot');
       widget.prompt.clear();
     } catch (e) {
       print('Error: $e');
@@ -45,28 +37,29 @@ class _MessagesActionsState extends State<MessagesActions> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
+    final firestore = ref.read(firestoreProvider);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
           IconButton(onPressed: () {}, icon: Icon(Icons.attach_file)),
-          Expanded(
+          Flexible(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 border: Border.all(width: 1),
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: Expanded(
-                child: TextField(
-                  controller: widget.prompt,
-                  decoration: InputDecoration(
-                    hint: Text('Type a message...'),
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                  ),
+              child: TextField(
+                controller: widget.prompt,
+                decoration: InputDecoration(
+                  hint: Text('Type a message...'),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
                 ),
               ),
             ),
@@ -74,7 +67,7 @@ class _MessagesActionsState extends State<MessagesActions> {
           //send btn
           SizedBox(width: 5),
           GestureDetector(
-            onTap: () => sendQuestion(),
+            onTap: () => sendQuestion(firestore),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
