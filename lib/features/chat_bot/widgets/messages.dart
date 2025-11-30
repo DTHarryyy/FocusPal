@@ -1,27 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:practice/core/widgets/custom_loading.dart';
 
 class Messages extends StatelessWidget {
-  final CollectionReference messages;
+  final Query messages;
   const Messages({super.key, required this.messages});
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
         stream: messages.snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Center(child: Text('No Messages'));
+          if (!snapshot.hasData) return CustomLoading();
           var docs = snapshot.data!.docs;
+          if (docs.isEmpty) {
+            return Center(
+              child: Text('No messages yet'),
+            );
+          }
           return ListView.separated(
-              reverse: true,
               itemCount: docs.length,
+              reverse: true,
               separatorBuilder: (context, index) => SizedBox(
                     height: 5,
                   ),
               itemBuilder: (context, index) {
                 var message = docs[index];
                 bool isUser = message['sender'] == 'user';
+
                 return Align(
                   alignment:
                       isUser ? Alignment.centerRight : Alignment.centerLeft,

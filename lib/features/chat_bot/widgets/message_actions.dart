@@ -5,7 +5,7 @@ import 'package:practice/features/chat_bot/services/cloud_firestore_service.dart
 import 'package:practice/features/chat_bot/services/gemini_service.dart';
 
 class MessagesActions extends ConsumerStatefulWidget {
-  final CollectionReference messages;
+  final Query messages;
   final TextEditingController prompt;
   const MessagesActions(
       {super.key, required this.messages, required this.prompt});
@@ -15,6 +15,7 @@ class MessagesActions extends ConsumerStatefulWidget {
 }
 
 class _MessagesActionsState extends ConsumerState<MessagesActions> {
+  bool isLoading = false;
   @override
   void dispose() {
     widget.prompt.dispose();
@@ -23,14 +24,22 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
 
   void sendQuestion(CloudFirestoreService firebase) async {
     try {
+      setState(() {
+        isLoading = !isLoading;
+      });
       final usermsg = widget.prompt.text.trim();
+      widget.prompt.clear();
+
       if (usermsg.isEmpty) return;
       final gemini = GeminiService();
 
       await firebase.addMessage('Harry', usermsg, 'user');
+
       final response = await gemini.ask(usermsg);
       await firebase.addMessage('ChatBot', response, 'bot');
-      widget.prompt.clear();
+      setState(() {
+        isLoading = !isLoading;
+      });
     } catch (e) {
       print('Error: $e');
     }
@@ -64,18 +73,23 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
               ),
             ),
           ),
-          //send btn
+          //send mun ah
           SizedBox(width: 5),
-          GestureDetector(
-            onTap: () => sendQuestion(firestore),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(100),
+          AbsorbPointer(
+            absorbing: isLoading,
+            child: GestureDetector(
+              onTap: () => sendQuestion(firestore),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isLoading
+                      ? const Color.fromARGB(255, 199, 198, 198)
+                      : Colors.blue,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                height: 45,
+                width: 45,
+                child: Center(child: Icon(Icons.send, color: Colors.white)),
               ),
-              height: 45,
-              width: 45,
-              child: Center(child: Icon(Icons.send, color: Colors.white)),
             ),
           ),
         ],

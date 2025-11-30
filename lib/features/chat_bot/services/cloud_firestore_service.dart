@@ -14,7 +14,12 @@ class CloudFirestoreService {
   CollectionReference get messages => firestore.collection('ChatBotMessages');
 
   Future<void> addMessage(String name, String message, String sender) async {
-    await messages.add({'name': name, 'message': message, 'sender': sender});
+    await messages.add({
+      'name': name,
+      'message': message,
+      'sender': sender,
+      'createdAt': FieldValue.serverTimestamp()
+    });
   }
 
   Future<void> updateMessage(String docId, String newMessage) async {

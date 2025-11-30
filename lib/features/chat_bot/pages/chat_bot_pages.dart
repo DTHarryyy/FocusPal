@@ -16,8 +16,10 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
   TextEditingController prompt = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final messages =
-        ref.read(firebaseFirestoreProvider).collection('ChatBotMessages');
+    final messages = ref
+        .read(firebaseFirestoreProvider)
+        .collection('ChatBotMessages')
+        .orderBy('createdAt', descending: true);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(),
