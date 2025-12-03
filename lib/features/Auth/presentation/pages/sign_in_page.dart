@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:practice/features/Auth/provider/user_information_provider.dart';
 import 'package:practice/features/chat_bot/pages/chat_bot_pages.dart';
-import 'package:practice/features/Auth/presentation/sign_up_page.dart';
+import 'package:practice/features/Auth/presentation/pages/sign_up_page.dart';
 import 'package:practice/features/Auth/presentation/widgets/custom_filled_btn.dart';
 import 'package:practice/features/Auth/presentation/widgets/custom_input.dart';
-import 'package:practice/features/Auth/service/auth_service.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:practice/features/Auth/presentation/sign_in_page.dart';
+import 'package:practice/features/Auth/presentation/pages/sign_in_page.dart';
 import 'package:practice/features/Auth/presentation/widgets/custom_filled_btn.dart';
 import 'package:practice/features/Auth/presentation/widgets/custom_input.dart';
-import 'package:practice/features/Auth/service/auth_service.dart';
+import 'package:practice/features/Auth/provider/user_information_provider.dart';
+import 'package:practice/features/Auth/service/auth_firestore_service.dart';
+import 'package:practice/features/chat_bot/pages/chat_bot_pages.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -14,6 +16,7 @@ class SignUpPage extends ConsumerStatefulWidget {
 }
 
 class _SignUpPageState extends ConsumerState<SignUpPage> {
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -28,6 +31,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   }
 
   void createAccount() async {
+    final username = usernameController.text.trim();
     final email = emailController.text.trim();
     final pass = passwordController.text.trim();
     final confm = confirmPasswordController.text.trim();
@@ -41,11 +45,15 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
     try {
       final auth = ref.read(authServiceProvider);
-      await auth.signUp(email, pass);
+      final firestore = ref.read(authFirestoreProvider);
+      final userCred = await auth.signUp(email, pass);
+      ref.read(userCredentialProvider.notifier).state = userCred;
+
+      final user = userCred.user!;
+      await firestore.addUserInformation(username, user.uid, email);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Account Succesfully created")));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => ChatBotPages()));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -70,6 +78,11 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     fontSize: 23,
                     fontWeight: FontWeight.w600,
                   ),
+                ),
+                CustomInput(
+                  controller: usernameController,
+                  hintText: "Enter username",
+                  isPassword: false,
                 ),
                 CustomInput(
                   controller: emailController,

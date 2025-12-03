@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:practice/core/widgets/custom_loading.dart';
+import 'package:practice/features/Auth/provider/user_information_provider.dart';
 import 'package:practice/features/chat_bot/pages/chat_bot_pages.dart';
-import 'package:practice/features/Auth/presentation/sign_in_page.dart';
-import 'package:practice/features/Auth/service/auth_service.dart';
+import 'package:practice/features/Auth/presentation/pages/sign_in_page.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

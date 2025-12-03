@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:practice/features/Auth/presentation/pages/sign_in_page.dart';
+import 'package:practice/features/Auth/provider/user_information_provider.dart';
 import 'package:practice/features/chat_bot/services/cloud_firestore_service.dart';
 import 'package:practice/features/chat_bot/services/gemini_service.dart';
 
@@ -22,7 +24,7 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
     super.dispose();
   }
 
-  void sendQuestion(CloudFirestoreService firebase) async {
+  void sendQuestion(CloudFirestoreService firebase, userId) async {
     try {
       setState(() {
         isLoading = !isLoading;
@@ -33,10 +35,10 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
       if (usermsg.isEmpty) return;
       final gemini = GeminiService();
 
-      await firebase.addMessage('Harry', usermsg, 'user');
+      await firebase.addMessage(userId, 'Harry', usermsg, 'user');
 
       final response = await gemini.ask(usermsg);
-      await firebase.addMessage('ChatBot', response, 'bot');
+      await firebase.addMessage('1', 'ChatBot', response, 'bot');
       setState(() {
         isLoading = !isLoading;
       });
@@ -50,6 +52,16 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
     BuildContext context,
   ) {
     final firestore = ref.read(firestoreProvider);
+    final userCred = ref.read(userCredentialProvider);
+    final uid = userCred?.user?.uid;
+    if (uid == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => SignInPage()));
+      });
+      return SizedBox();
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
@@ -78,7 +90,7 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
           AbsorbPointer(
             absorbing: isLoading,
             child: GestureDetector(
-              onTap: () => sendQuestion(firestore),
+              onTap: () => sendQuestion(firestore, uid),
               child: Container(
                 decoration: BoxDecoration(
                   color: isLoading
