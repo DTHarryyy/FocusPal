@@ -6,6 +6,10 @@ class ChatFirestoreRepository {
   ChatFirestoreRepository(this.firestore);
 
   Future<void> addNewMessage(Message msg) async {
-    await firestore.collection('UserMessages').add(msg.toJson());
+    await firestore
+        .collection('UserChatBot')
+        .doc(msg.userId)
+        .collection('Messages')
+        .add(msg.toJson());
   }
 }

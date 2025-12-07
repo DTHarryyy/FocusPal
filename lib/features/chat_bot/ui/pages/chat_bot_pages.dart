@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:practice/core/providers/firestore_provider.dart';
+import 'package:practice/features/Auth/provider/auth_changes_provider.dart';
+import 'package:practice/features/Auth/ui/pages/sign_in_page.dart';
 import 'package:practice/features/chat_bot/ui/widgets/message_actions.dart';
-import 'package:practice/features/chat_bot/ui/widgets/messages.dart';
+import 'package:practice/features/chat_bot/ui/widgets/conversation.dart';
 
 class ChatBotPages extends ConsumerStatefulWidget {
   const ChatBotPages({super.key});
@@ -16,9 +18,17 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
   TextEditingController prompt = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final user = ref.read(currentUserProvider).value;
+    if (user == null) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => SignInPage()));
+    }
+
     final messages = ref
         .read(firestoreProvider)
-        .collection('ChatBotMessages')
+        .collection('UserChatBot')
+        .doc(user!.uid)
+        .collection('Messages')
         .orderBy('createdAt', descending: true);
     return Scaffold(
       backgroundColor: Colors.white,
@@ -29,7 +39,7 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: Messages(
+                child: Conversation(
                   messages: messages,
                 ),
               ),

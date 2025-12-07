@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:practice/core/widgets/custom_loading.dart';
 
-class Messages extends StatelessWidget {
+class Conversation extends StatelessWidget {
   final Query messages;
-  const Messages({super.key, required this.messages});
+  const Conversation({super.key, required this.messages});
 
   @override
   Widget build(BuildContext context) {
