@@ -1,15 +1,27 @@
 class AppUser {
-  final String userName;
-  final String email;
   final String uid;
-  AppUser({required this.email, required this.userName, required this.uid});
+  final String email;
+  final String userName;
 
-  factory AppUser.fromMap(Map<String, dynamic> data) {
+  AppUser({
+    required this.uid,
+    required this.email,
+    required this.userName,
+  });
+
+  factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-        email: data['userID'], userName: data['userName'], uid: data['email']);
+      uid: json['uid'] ?? '',
+      email: json['email'] ?? '',
+      userName: json['userName'] ?? '',
+    );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'userId': uid, 'name': userName, 'enail': email};
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'email': email,
+      'userName': userName,
+    };
   }
 }

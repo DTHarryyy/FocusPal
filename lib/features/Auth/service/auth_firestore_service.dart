@@ -1,11 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:practice/core/service/firestore_service.dart';
-
-final authFirestoreProvider = Provider((ref) {
-  final firestore = ref.read(firebaseFirestoreProvider);
-  return AuthFirestoreService(firestore);
-});
 
 class AuthFirestoreService {
   final FirebaseFirestore firestore;
@@ -19,11 +12,11 @@ class AuthFirestoreService {
     String userID,
     String email,
   ) async {
-    await userInformation.add({
+    await userInformation.doc(userID).set({
       'name': name,
-      'userID': userID,
       'email': email,
-      'createdAt': FieldValue.serverTimestamp()
+      'createdAt': FieldValue.serverTimestamp(),
+      'userID': userID,
     });
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:practice/core/service/firestore_service.dart';
-import 'package:practice/features/chat_bot/widgets/message_actions.dart';
-import 'package:practice/features/chat_bot/widgets/messages.dart';
+import 'package:practice/core/providers/firestore_provider.dart';
+import 'package:practice/features/chat_bot/ui/widgets/message_actions.dart';
+import 'package:practice/features/chat_bot/ui/widgets/messages.dart';
 
 class ChatBotPages extends ConsumerStatefulWidget {
   const ChatBotPages({super.key});
@@ -17,7 +17,7 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
   @override
   Widget build(BuildContext context) {
     final messages = ref
-        .read(firebaseFirestoreProvider)
+        .read(firestoreProvider)
         .collection('ChatBotMessages')
         .orderBy('createdAt', descending: true);
     return Scaffold(
@@ -35,7 +35,7 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
               ),
             ),
             MessagesActions(
-              messages: messages,
+              msg: messages,
               prompt: prompt,
             ),
           ],
