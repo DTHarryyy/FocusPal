@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:practice/features/Auth/provider/auth_changes_provider.dart';
 import 'package:practice/features/chat_bot/model/message.dart';
 import 'package:practice/features/chat_bot/provider/chats_provider.dart';
+import 'package:practice/features/chat_bot/services/gemini_service.dart';
 
 class MessagesActions extends ConsumerStatefulWidget {
   final Query msg;
@@ -21,25 +22,31 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
     widget.prompt.dispose();
     super.dispose();
   }
+  void pickFile(){
 
+  }
   void sendChat() async {
-    final user = ref.read(currentUserProvider).value;
-    if (user == null) return;
-    final userMessage = ref.watch(addNewChatProvider);
-
-    setState(() => isLoading = !isLoading);
+    final user = ref.watch(currentUserProvider).value;
+    final saveMessage = ref.read(addNewChatProvider);
 
     try {
-      final userMsg = Message(
-          userId: user.uid,
-          sender: user.userName,
-          message: widget.msg.toString(),
-          createdAt: FieldValue.serverTimestamp());
+      setState(() => isLoading = true);
 
-      await userMessage(userMsg);
-      setState(() => isLoading = !isLoading);
+      final prompt = widget.prompt.text.trim();
+      widget.prompt.clear();
+
+      final userMsg = Message(userId: user!.uid, sender: 'user', message: prompt, createdAt: FieldValue.serverTimestamp());
+
+      await saveMessage(userMsg);
+
+      final res = await GeminiService().ask(prompt);
+      final botMsg = Message(userId: user.uid, sender: 'bot', message: res, createdAt: FieldValue.serverTimestamp());
+      await saveMessage(botMsg);
+
+      setState(() => isLoading = false);
+
     } catch (e) {
-      print('Error: $e');
+      print('there must be an error');
     }
   }
 
@@ -49,7 +56,7 @@ class _MessagesActionsState extends ConsumerState<MessagesActions> {
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.attach_file)),
+          IconButton(onPressed: () => pickFile, icon: Icon(Icons.attach_file)),
           Flexible(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10),

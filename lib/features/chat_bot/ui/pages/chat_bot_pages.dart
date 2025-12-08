@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:practice/core/providers/firestore_provider.dart';
+import 'package:practice/core/widgets/custom_loading.dart';
 import 'package:practice/features/Auth/provider/auth_changes_provider.dart';
 import 'package:practice/features/Auth/ui/pages/sign_in_page.dart';
 import 'package:practice/features/chat_bot/ui/widgets/message_actions.dart';
@@ -18,40 +19,43 @@ class _ChatBotPagesState extends ConsumerState<ChatBotPages> {
   TextEditingController prompt = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final user = ref.read(currentUserProvider).value;
-    if (user == null) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => SignInPage()));
-    }
-
-    final messages = ref
-        .read(firestoreProvider)
-        .collection('UserChatBot')
-        .doc(user!.uid)
-        .collection('Messages')
-        .orderBy('createdAt', descending: true);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CustomAppBar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: Conversation(
-                  messages: messages,
+    final userAsync = ref.watch(currentUserProvider);
+    
+    return userAsync.when(
+      data: (user){
+        if(user == null)return const SignInPage();
+        final messages = ref
+            .read(firestoreProvider)
+            .collection('UserChatBot')
+            .doc(user.uid)
+            .collection('Messages')
+            .orderBy('createdAt', descending: true);
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: CustomAppBar(),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    child: Conversation(
+                      messages: messages,
+                    ),
+                  ),
                 ),
-              ),
+                MessagesActions(
+                  msg: messages,
+                  prompt: prompt,
+                ),
+              ],
             ),
-            MessagesActions(
-              msg: messages,
-              prompt: prompt,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        );
+      },
+      error: (e, st) => Text('There must be an error'),
+      loading:  () => CustomLoading()
+      );
   }
 }
 

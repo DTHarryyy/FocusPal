@@ -6,21 +6,22 @@ class SignUpController extends AsyncNotifier<AppUser?> {
   @override
   Future<AppUser?> build() async => null;
 
-  Future<void> signUp(String email, String password, String usernmae) async {
+  Future<void> signUp(String email, String password, String username) async {
     state = const AsyncValue.loading();
 
     final signUpUseCase = ref.read(signUpUseCaseProvider);
     final saveUserUseCase = ref.read(saveUseCaseProvider);
 
     state = await AsyncValue.guard(() async {
-      //creatte accout user in firebase auth
+
       final user = await signUpUseCase(email, password);
 
-      final updatedUser =
-          AppUser(uid: user.uid, email: user.email, userName: usernmae);
+      final newUser =
+          AppUser(uid: user.uid, email: email, userName: username);
 
-      await saveUserUseCase(updatedUser);
-      return updatedUser;
+      await saveUserUseCase(newUser);
+
+      return newUser;
     });
   }
 }

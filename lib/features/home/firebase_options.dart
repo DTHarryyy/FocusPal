@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,20 +46,29 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBvbBd-MuyXEfrA8IcyyjUYTRUMwXzLbYg',
+    appId: '1:1005384776512:web:09cc91ba4efe23fa0e58a5',
+    messagingSenderId: '1005384776512',
+    projectId: 'smartpal-79c28',
+    authDomain: 'smartpal-79c28.firebaseapp.com',
+    storageBucket: 'smartpal-79c28.firebasestorage.app',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB9Xk_S9e23SlDpN2lue8FRWyjztvaY2VY',
-    appId: '1:297187240156:android:1178ea63129dbe4394ec19',
-    messagingSenderId: '297187240156',
-    projectId: 'practice-2c3c6',
-    storageBucket: 'practice-2c3c6.firebasestorage.app',
+    apiKey: 'AIzaSyB1pbVhJ5xLhFbh9qOHcOGcAonprwtUlP0',
+    appId: '1:1005384776512:android:41a7f5e7978adb4d0e58a5',
+    messagingSenderId: '1005384776512',
+    projectId: 'smartpal-79c28',
+    storageBucket: 'smartpal-79c28.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDBBlVJXkRygeO7pZvBxL5n2UkZgmcCCFM',
-    appId: '1:297187240156:ios:9102216ba87f402894ec19',
-    messagingSenderId: '297187240156',
-    projectId: 'practice-2c3c6',
-    storageBucket: 'practice-2c3c6.firebasestorage.app',
+    apiKey: 'AIzaSyC2x5viXUwYn9zmJg0Ge-yO4VhjlO-lgQQ',
+    appId: '1:1005384776512:ios:82d9cc3d2dcdaa830e58a5',
+    messagingSenderId: '1005384776512',
+    projectId: 'smartpal-79c28',
+    storageBucket: 'smartpal-79c28.firebasestorage.app',
     iosBundleId: 'com.example.practice',
   );
 }

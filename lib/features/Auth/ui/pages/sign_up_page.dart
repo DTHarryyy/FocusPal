@@ -48,6 +48,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
       return;
     }
     await controller.signUp(email, pass, username);
+    
     if (!mounted) return;
     Navigator.pushReplacement(
       context,

@@ -7,24 +7,23 @@ class AuthCredentialRepository {
   final FirebaseFirestore firestore;
 
   AuthCredentialRepository({required this.auth, required this.firestore});
-  Future<AppUser> signIn(String email, String password) async {
-    final userCredential =
+  Future<User> signIn(String email, String password) async {
+    final cred =
         await auth.signInWithEmailAndPassword(email: email, password: password);
 
-    final uid = userCredential.user?.uid;
-
-    final doc = await firestore.collection('UsersInformation').doc(uid).get();
-
-    return AppUser.fromJson(doc.data()!);
+    return cred.user!;
   }
 
-  Future<AppUser> signUp(String email, String password) async {
+  Future<User> signUp(String email, String password) async {
     final cred = await auth.createUserWithEmailAndPassword(
         email: email, password: password);
 
-    return AppUser(uid: cred.user!.uid, email: email, userName: '');
+    return cred.user!;
   }
-
+  Future<AppUser> getUser(String uid) async {
+    final snapShot = await firestore.collection('UsersInformation').doc(uid).get();
+    return AppUser.fromJson(snapShot.data()!);
+  }
   Future<void> saveUserData(AppUser user) async {
     await firestore
         .collection('UsersInformation')

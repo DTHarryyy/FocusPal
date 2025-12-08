@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "297187240156",
-    "project_id": "practice-2c3c6",
-    "storage_bucket": "practice-2c3c6.firebasestorage.app"
+    "project_number": "1005384776512",
+    "project_id": "smartpal-79c28",
+    "storage_bucket": "smartpal-79c28.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:297187240156:android:1178ea63129dbe4394ec19",
+        "mobilesdk_app_id": "1:1005384776512:android:41a7f5e7978adb4d0e58a5",
         "android_client_info": {
           "package_name": "com.example.practice"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB9Xk_S9e23SlDpN2lue8FRWyjztvaY2VY"
+          "current_key": "AIzaSyB1pbVhJ5xLhFbh9qOHcOGcAonprwtUlP0"
         }
       ],
       "services": {

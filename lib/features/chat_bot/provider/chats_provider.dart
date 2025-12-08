@@ -7,4 +7,4 @@ final chatsRepositoryProvider =
     Provider((ref) => ChatFirestoreRepository(FirebaseFirestore.instance));
 
 final addNewChatProvider =
-    Provider((ref) => AddNewMEssageUseCase(ref.read(chatsRepositoryProvider)));
+    Provider((ref) => AddNewMessageUseCase(ref.read(chatsRepositoryProvider)));
